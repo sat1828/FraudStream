@@ -1,0 +1,20 @@
+# ─── Feast 0.40 compatible feature store config ───────────────────────────────
+# Uses local provider (no cloud) with Redis online store and Parquet offline store
+# Compatible with feast==0.40.0 as pinned in requirements.txt
+
+project: upi_fraud_detection
+registry: /data/feast_registry.db
+provider: local
+
+online_store:
+  type: redis
+  connection_string: "redis://redis:6379"
+
+offline_store:
+  type: file
+
+entity_key_serialization_version: 2
+
+# Feature server disabled for local mode
+feature_server:
+  type: local

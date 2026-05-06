@@ -1,0 +1,144 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "description": "UPI Fraud Detection — Real-time ML metrics",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 50 },
+            { "color": "red", "value": 80 }
+          ]},
+          "unit": "ms"
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "pluginVersion": "10.3.1",
+      "title": "P95 Inference Latency",
+      "type": "stat",
+      "targets": [{
+        "datasource": "Prometheus",
+        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{handler=\"/api/v1/predict\"}[5m])) * 1000",
+        "legendFormat": "P95 Latency"
+      }]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "title": "Request Rate (TPS)",
+      "type": "stat",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{
+        "datasource": "Prometheus",
+        "expr": "rate(http_requests_total{handler=\"/api/v1/predict\"}[1m])",
+        "legendFormat": "TPS"
+      }]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" },
+        "thresholds": { "steps": [{ "color": "green" }, { "color": "red", "value": 1 }] }
+      }},
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "title": "Error Rate",
+      "type": "stat",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{
+        "datasource": "Prometheus",
+        "expr": "rate(http_requests_total{status_code=~\"5..\"}[5m])",
+        "legendFormat": "5xx Errors"
+      }]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "title": "Active WebSocket Connections",
+      "type": "stat",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{
+        "datasource": "Prometheus",
+        "expr": "http_requests_inprogress{handler=\"/ws/live\"}",
+        "legendFormat": "WS Clients"
+      }]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 10 }, "color": { "mode": "palette-classic" } }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "id": 5,
+      "title": "Inference Latency over Time",
+      "type": "timeseries",
+      "options": { "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{handler=\"/api/v1/predict\"}[1m])) * 1000",
+          "legendFormat": "p50"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{handler=\"/api/v1/predict\"}[1m])) * 1000",
+          "legendFormat": "p95"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{handler=\"/api/v1/predict\"}[1m])) * 1000",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 10 } } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "id": 6,
+      "title": "Request Rate by Status",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(http_requests_total{status_code=\"200\"}[1m])",
+          "legendFormat": "2xx Success"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(http_requests_total{status_code=~\"4..\"}[1m])",
+          "legendFormat": "4xx Client Error"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(http_requests_total{status_code=~\"5..\"}[1m])",
+          "legendFormat": "5xx Server Error"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "tags": ["upi", "fraud", "mlops"],
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "UPI Fraud Detection — Overview",
+  "uid": "upi-fraud",
+  "version": 1
+}

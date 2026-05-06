@@ -1,0 +1,467 @@
+# UPI Fraud MLOps Pro — Docker Compose
+# ONE command: docker compose up --build
+# All secrets come from .env (copy .env.example → .env before first run)
+# Never hard-code credentials here — use ${VAR} references only.
+
+services:
+  # ─── Infrastructure ─────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:     ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-upi_user} -d ${POSTGRES_DB:-upi_fraud}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+
+  redis:
+    image: redis:7-alpine
+    command: >
+      redis-server
+        --maxmemory 512mb
+        --maxmemory-policy allkeys-lru
+        --requirepass ${REDIS_PASSWORD:-changeme}
+        --save ""
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_EXTERNAL_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+
+  redpanda:
+    image: redpandadata/redpanda:v23.3.11
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --mode dev-container
+      - --smp 1
+      - --default-log-level warn
+    ports:
+      - "19092:19092"
+      - "18082:18082"
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+
+  redpanda-init:
+    image: redpandadata/redpanda:v23.3.11
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      "rpk -X brokers=redpanda:9092 topic create upi-raw-transactions --partitions 6 --replicas 1 2>/dev/null || true &&
+       rpk -X brokers=redpanda:9092 topic create upi-predictions --partitions 6 --replicas 1 2>/dev/null || true &&
+       rpk -X brokers=redpanda:9092 topic create drift-alerts --partitions 1 --replicas 1 2>/dev/null || true &&
+       echo 'Topics ready'"
+    restart: "no"
+
+  # ─── MLflow ───────────────────────────────────────────────────────────────────
+  mlflow:
+    build:
+      context: ./docker/mlflow
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST:     ${POSTGRES_HOST:-postgres}
+      POSTGRES_DB:       ${POSTGRES_DB:-upi_fraud}
+    command: >
+      mlflow server
+        --backend-store-uri postgresql://${POSTGRES_USER:-upi_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-upi_fraud}
+        --default-artifact-root /mlflow/artifacts
+        --host 0.0.0.0
+        --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+
+  # ─── MLOps Pipeline ──────────────────────────────────────────────────────────
+  feast-apply:
+    build:
+      context: ./mlops
+      dockerfile: ../docker/mlops/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+    command: >
+      bash -c "
+        echo '[feast-apply] Waiting for Redis...' &&
+        until redis-cli -u redis://:${REDIS_PASSWORD:-changeme}@redis:6379 ping 2>/dev/null; do sleep 2; done &&
+        echo '[feast-apply] Redis ready. Applying feature store...' &&
+        cd /app/feast_repo/feature_repo &&
+        feast apply &&
+        echo '[feast-apply] Done.'
+      "
+    volumes:
+      - ./mlops:/app
+      - ./data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: "no"
+
+  data-generator:
+    build:
+      context: ./mlops
+      dockerfile: ../docker/mlops/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+    command: >
+      bash -c "
+        if [ -f /data/train.parquet ]; then
+          echo '[data-gen] Dataset already exists. Skipping generation.';
+        else
+          echo '[data-gen] Generating 100k synthetic UPI transactions...' &&
+          python /app/producer/generate_training_data.py &&
+          echo '[data-gen] Done.';
+        fi
+      "
+    volumes:
+      - ./mlops:/app
+      - ./data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  model-trainer:
+    build:
+      context: ./mlops
+      dockerfile: ../docker/mlops/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      MLFLOW_TRACKING_URI:     ${MLFLOW_TRACKING_URI:-http://mlflow:5000}
+    command: >
+      bash -c "
+        echo '[trainer] Waiting for MLflow...' &&
+        until curl -sf http://mlflow:5000/health; do sleep 3; done &&
+        until [ -f /data/train.parquet ]; do echo '[trainer] Waiting for data...'; sleep 5; done &&
+        echo '[trainer] Starting XGBoost training...' &&
+        python /app/training/train.py &&
+        echo '[trainer] Training complete.'
+      "
+    volumes:
+      - ./mlops:/app
+      - ./data:/data
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      data-generator:
+        condition: service_completed_successfully
+    restart: "no"
+
+  transaction-producer:
+    build:
+      context: ./mlops
+      dockerfile: ../docker/mlops/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      MLFLOW_TRACKING_URI:     ${MLFLOW_TRACKING_URI:-http://mlflow:5000}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-redpanda:9092}
+    command: >
+      bash -c "
+        echo '[producer] Waiting for model training...' &&
+        until redis-cli -u redis://:${REDIS_PASSWORD:-changeme}@redis:6379 get current_model_version | grep -q 'v'; do sleep 5; done &&
+        echo '[producer] Model ready. Starting transaction stream...' &&
+        python /app/producer/transaction_producer.py
+      "
+    volumes:
+      - ./mlops:/app
+    depends_on:
+      redpanda-init:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  kafka-consumer:
+    build:
+      context: ./mlops
+      dockerfile: ../docker/mlops/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-redpanda:9092}
+      BACKEND_URL:             http://backend:8000
+      ADMIN_EMAIL:             ${ADMIN_EMAIL:-admin@upi.ai}
+      ADMIN_PASSWORD:          ${ADMIN_PASSWORD}
+    command: >
+      bash -c "
+        echo '[consumer] Waiting for backend...' &&
+        until curl -sf http://backend:8000/health; do sleep 3; done &&
+        echo '[consumer] Backend ready. Starting Kafka consumer...' &&
+        python /app/producer/kafka_consumer.py
+      "
+    volumes:
+      - ./mlops:/app
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      SECRET_KEY:              ${SECRET_KEY}
+      CELERY_BROKER_URL:       redis://:${REDIS_PASSWORD:-changeme}@redis:6379/1
+      CELERY_RESULT_BACKEND:   redis://:${REDIS_PASSWORD:-changeme}@redis:6379/2
+      FEAST_REPO_PATH:         /mlops/feast_repo/feature_repo
+      MLFLOW_TRACKING_URI:     ${MLFLOW_TRACKING_URI:-http://mlflow:5000}
+      MLFLOW_MODEL_NAME:       upi-fraud-xgboost
+    command: celery -A app.core.celery_app worker --loglevel=info --queues=retrain,default -c 2
+    volumes:
+      - ./backend:/app
+      - ./mlops:/mlops
+      - ./data:/data
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.core.celery_app inspect ping -d celery@$$(hostname) || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─── Backend API ──────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      SECRET_KEY:              ${SECRET_KEY}
+      CELERY_BROKER_URL:       redis://:${REDIS_PASSWORD:-changeme}@redis:6379/1
+      CELERY_RESULT_BACKEND:   redis://:${REDIS_PASSWORD:-changeme}@redis:6379/2
+      FEAST_REPO_PATH:         /mlops/feast_repo/feature_repo
+      MLFLOW_TRACKING_URI:     ${MLFLOW_TRACKING_URI:-http://mlflow:5000}
+      MLFLOW_MODEL_NAME:       upi-fraud-xgboost
+      CORS_ORIGINS:            ${CORS_ORIGINS:-http://localhost:3000,http://frontend:3000}
+      ADMIN_EMAIL:             ${ADMIN_EMAIL:-admin@upi.ai}
+      ADMIN_PASSWORD:          ${ADMIN_PASSWORD}
+      RATE_LIMIT_REQUESTS:     ${RATE_LIMIT_REQUESTS:-1000}
+      RATE_LIMIT_WINDOW:       ${RATE_LIMIT_WINDOW:-60}
+    command: ["bash", "/app/entrypoint.sh"]
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - ./backend:/app
+      - ./mlops:/mlops
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+
+  drift-monitor:
+    build:
+      context: ./mlops
+      dockerfile: ../docker/mlops/Dockerfile
+    environment:
+      POSTGRES_HOST:           ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT:           ${POSTGRES_PORT:-5432}
+      POSTGRES_DB:             ${POSTGRES_DB:-upi_fraud}
+      POSTGRES_USER:           ${POSTGRES_USER:-upi_user}
+      POSTGRES_PASSWORD:       ${POSTGRES_PASSWORD}
+      REDIS_URL:               redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      CELERY_BROKER_URL:       redis://:${REDIS_PASSWORD:-changeme}@redis:6379/1
+      BACKEND_URL:             http://backend:8000
+      DRIFT_THRESHOLD:         ${DRIFT_THRESHOLD:-0.1}
+      DRIFT_DETECTION_WINDOW:  ${DRIFT_DETECTION_WINDOW:-500}
+    command: >
+      bash -c "
+        echo '[drift] Waiting for backend...' &&
+        until curl -sf http://backend:8000/health; do sleep 5; done &&
+        echo '[drift] Starting Evidently drift monitor...' &&
+        python /app/monitoring/drift_monitor.py
+      "
+    volumes:
+      - ./mlops:/app
+      - ./data:/data
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Observability ────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.49.0
+    user: "65534:65534"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    user: "472:472"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-changeme}
+      GF_SECURITY_ADMIN_USER:     ${GRAFANA_USER:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED:  "false"
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # ─── Frontend ─────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_URL:     ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      NEXT_PUBLIC_WS_URL:      ${NEXT_PUBLIC_WS_URL:-ws://localhost:8000}
+      NEXT_PUBLIC_GRAFANA_URL: ${NEXT_PUBLIC_GRAFANA_URL:-http://localhost:3001}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+
+volumes:
+  postgres_data:
+  redis_data:
+  redpanda_data:
+  mlflow_artifacts:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    name: upi_fraud_network
+    driver: bridge

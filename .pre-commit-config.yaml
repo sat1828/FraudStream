@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pydantic
+          - pydantic-settings
+          - sqlalchemy
+          - types-redis
+          - types-passlib
+          - types-python-jose
+        args: [--ignore-missing-imports, --no-strict-optional]
+
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest
+        entry: bash -c 'cd backend && python -m pytest tests/ -x -q --tb=short'
+        language: system
+        types: [python]
+        pass_filenames: false

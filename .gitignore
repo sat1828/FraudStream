@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+.vercel/
+out/
+npm-debug.log*
+package-lock.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Data
+data/*.parquet
+data/*.csv
+data/drift_reports/
+
+# Docker
+*.log
+
+# MLflow
+mlflow/
+mlartifacts/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Load test results
+locust_results/

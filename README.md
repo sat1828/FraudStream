@@ -257,14 +257,6 @@ A live demo link will be available once deployed.
 
 ---
 
-## Demo Video
-
-[![Watch the demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.loom.com/share/YOUR_VIDEO_ID)
-
-*60-second walkthrough: startup → training → live stream → drift → retrain*
-
----
-
 ## License
 
 MIT License — see [LICENSE](LICENSE)

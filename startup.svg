@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 280" width="900" height="280">
+  <defs>
+    <style>
+      @keyframes typeIn{0%{opacity:0;transform:translateX(-4px)}100%{opacity:1;transform:translateX(0)}}
+      @keyframes checkIn{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:scale(1)}}
+      .l1{animation:typeIn .25s .2s both}
+      .l2{animation:typeIn .25s .5s both}
+      .l3{animation:typeIn .25s .8s both}
+      .l4{animation:typeIn .25s 1.1s both}
+      .l5{animation:typeIn .25s 1.4s both}
+      .l6{animation:typeIn .25s 1.7s both}
+      .l7{animation:typeIn .25s 2.0s both}
+      .l8{animation:typeIn .25s 2.3s both}
+      .l9{animation:typeIn .25s 2.6s both}
+      .l10{animation:typeIn .25s 2.9s both}
+      .c1{animation:checkIn .2s .5s both}
+      .c2{animation:checkIn .2s .8s both}
+      .c3{animation:checkIn .2s 1.1s both}
+      .c4{animation:checkIn .2s 1.4s both}
+      .c5{animation:checkIn .2s 1.7s both}
+      .c6{animation:checkIn .2s 2.0s both}
+      .c7{animation:checkIn .2s 2.3s both}
+      .c8{animation:checkIn .2s 2.6s both}
+      .c9{animation:checkIn .2s 2.9s both}
+      .c10{animation:checkIn .2s 3.2s both}
+    </style>
+  </defs>
+  <rect width="900" height="280" fill="#050b12"/>
+  <rect x="0" y="0" width="900" height="28" fill="rgba(0,0,0,0.4)"/>
+  <text x="20" y="19" font-family="monospace" font-size="10" fill="#334155" letter-spacing="1.5">docker compose up --build  ·  STARTUP SEQUENCE</text>
+  <rect x="876" y="8" width="10" height="10" rx="2" fill="#ef4444"/>
+  <rect x="862" y="8" width="10" height="10" rx="2" fill="#f59e0b"/>
+  <rect x="848" y="8" width="10" height="10" rx="2" fill="#22c55e"/>
+
+  <!-- log lines -->
+  <text class="l1" x="18" y="54" font-family="monospace" font-size="9" fill="#334155">[postgres]</text>
+  <text class="l1" x="130" y="54" font-family="monospace" font-size="9" fill="#64748b">database system is ready to accept connections</text>
+  <text class="l1" x="820" y="54" font-family="monospace" font-size="9" fill="#475569">~10s</text>
+  <text class="c1" x="870" y="54" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l2" x="18" y="76" font-family="monospace" font-size="9" fill="#334155">[redis]</text>
+  <text class="l2" x="130" y="76" font-family="monospace" font-size="9" fill="#64748b">Ready to accept connections</text>
+  <text class="l2" x="820" y="76" font-family="monospace" font-size="9" fill="#475569">~10s</text>
+  <text class="c2" x="870" y="76" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l3" x="18" y="98" font-family="monospace" font-size="9" fill="#334155">[redpanda]</text>
+  <text class="l3" x="130" y="98" font-family="monospace" font-size="9" fill="#64748b">Successfully started Redpanda!</text>
+  <text class="l3" x="820" y="98" font-family="monospace" font-size="9" fill="#475569">~15s</text>
+  <text class="c3" x="870" y="98" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l4" x="18" y="120" font-family="monospace" font-size="9" fill="#334155">[mlflow]</text>
+  <text class="l4" x="130" y="120" font-family="monospace" font-size="9" fill="#64748b">Uvicorn running on http://0.0.0.0:5000</text>
+  <text class="l4" x="820" y="120" font-family="monospace" font-size="9" fill="#475569">~20s</text>
+  <text class="c4" x="870" y="120" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l5" x="18" y="142" font-family="monospace" font-size="9" fill="#334155">[data-gen]</text>
+  <text class="l5" x="130" y="142" font-family="monospace" font-size="9" fill="#64748b">Dataset generated: 100,000 transactions</text>
+  <text class="l5" x="820" y="142" font-family="monospace" font-size="9" fill="#475569">~60s</text>
+  <text class="c5" x="870" y="142" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l6" x="18" y="164" font-family="monospace" font-size="9" fill="#334155">[trainer]</text>
+  <text class="l6" x="130" y="164" font-family="monospace" font-size="9" fill="#22c55e">✅ Training complete! AUC: 0.963  →  model v1 promoted to Production</text>
+  <text class="l6" x="820" y="164" font-family="monospace" font-size="9" fill="#475569">~120s</text>
+  <text class="c6" x="870" y="164" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l7" x="18" y="186" font-family="monospace" font-size="9" fill="#334155">[backend]</text>
+  <text class="l7" x="130" y="186" font-family="monospace" font-size="9" fill="#64748b">Uvicorn running on http://0.0.0.0:8000</text>
+  <text class="l7" x="820" y="186" font-family="monospace" font-size="9" fill="#475569">~130s</text>
+  <text class="c7" x="870" y="186" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l8" x="18" y="208" font-family="monospace" font-size="9" fill="#334155">[producer]</text>
+  <text class="l8" x="130" y="208" font-family="monospace" font-size="9" fill="#64748b">Transaction stream started at 20 TPS</text>
+  <text class="l8" x="820" y="208" font-family="monospace" font-size="9" fill="#475569">~140s</text>
+  <text class="c8" x="870" y="208" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l9" x="18" y="230" font-family="monospace" font-size="9" fill="#334155">[consumer]</text>
+  <text class="l9" x="130" y="230" font-family="monospace" font-size="9" fill="#64748b">Kafka consumer connected · scoring live transactions</text>
+  <text class="l9" x="820" y="230" font-family="monospace" font-size="9" fill="#475569">~145s</text>
+  <text class="c9" x="870" y="230" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <text class="l10" x="18" y="252" font-family="monospace" font-size="9" fill="#3b82f6">[frontend]</text>
+  <text class="l10" x="130" y="252" font-family="monospace" font-size="9" fill="#60a5fa">Ready on http://0.0.0.0:3000  →  open http://localhost:3000</text>
+  <text class="l10" x="820" y="252" font-family="monospace" font-size="9" fill="#475569">~150s</text>
+  <text class="c10" x="870" y="252" font-family="monospace" font-size="10" fill="#22c55e">✓</text>
+
+  <rect x="0" y="266" width="900" height="2" fill="rgba(34,197,94,0.3)"/>
+  <text x="450" y="276" text-anchor="middle" font-family="monospace" font-size="8" fill="#22c55e" letter-spacing="2">ALL 15 SERVICES HEALTHY · first run ~5-10min · subsequent runs ~60s</text>
+</svg>

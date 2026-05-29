@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" width="900" height="320">
+  <defs>
+    <style>
+      @keyframes rowIn{0%{opacity:0;transform:translateX(-8px)}100%{opacity:1;transform:translateX(0)}}
+      .r0{animation:rowIn .35s .05s both}
+      .r1{animation:rowIn .35s .15s both}
+      .r2{animation:rowIn .35s .25s both}
+      .r3{animation:rowIn .35s .35s both}
+      .r4{animation:rowIn .35s .45s both}
+      .r5{animation:rowIn .35s .55s both}
+      .r6{animation:rowIn .35s .65s both}
+    </style>
+  </defs>
+  <rect width="900" height="320" fill="#070d18"/>
+  <!-- header -->
+  <rect x="0" y="0" width="900" height="36" fill="rgba(255,255,255,0.025)"/>
+  <text x="30" y="23" font-family="monospace" font-size="10" fill="#475569" letter-spacing="2">CATEGORY</text>
+  <text x="220" y="23" font-family="monospace" font-size="10" fill="#475569" letter-spacing="2">FEATURES (20 TOTAL)</text>
+  <text x="700" y="23" font-family="monospace" font-size="10" fill="#475569" letter-spacing="2">SOURCE</text>
+  <line x1="0" y1="36" x2="900" y2="36" stroke="rgba(100,160,255,0.12)" stroke-width=".5"/>
+  <!-- rows -->
+  <g class="r0">
+    <rect x="0" y="36" width="900" height="40" fill="rgba(59,130,246,0.04)"/>
+    <rect x="16" y="44" width="8" height="8" rx="2" fill="rgba(59,130,246,0.4)"/>
+    <text x="34" y="58" font-family="monospace" font-size="10" fill="#93c5fd">Transaction</text>
+    <text x="220" y="51" font-family="monospace" font-size="9" fill="#64748b">amount</text>
+    <text x="220" y="66" font-family="monospace" font-size="9" fill="#64748b">amount_log · amount_zscore</text>
+    <text x="700" y="58" font-family="monospace" font-size="9" fill="#475569">request body</text>
+    <line x1="0" y1="76" x2="900" y2="76" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+  <g class="r1">
+    <rect x="0" y="76" width="900" height="40" fill="rgba(20,184,166,0.03)"/>
+    <rect x="16" y="84" width="8" height="8" rx="2" fill="rgba(20,184,166,0.4)"/>
+    <text x="34" y="98" font-family="monospace" font-size="10" fill="#5eead4">Velocity (sender)</text>
+    <text x="220" y="91" font-family="monospace" font-size="9" fill="#64748b">txn_count_5min / 1h / 24h</text>
+    <text x="220" y="106" font-family="monospace" font-size="9" fill="#64748b">amount_velocity_5min / 1h / 24h</text>
+    <text x="700" y="98" font-family="monospace" font-size="9" fill="#475569">Redis direct</text>
+    <line x1="0" y1="116" x2="900" y2="116" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+  <g class="r2">
+    <rect x="0" y="116" width="900" height="40" fill="rgba(59,130,246,0.04)"/>
+    <rect x="16" y="124" width="8" height="8" rx="2" fill="rgba(139,92,246,0.5)"/>
+    <text x="34" y="138" font-family="monospace" font-size="10" fill="#c4b5fd">Graph (sender)</text>
+    <text x="220" y="131" font-family="monospace" font-size="9" fill="#64748b">sender_unique_receivers_1h</text>
+    <text x="220" y="146" font-family="monospace" font-size="9" fill="#64748b">sender_unique_devices_24h</text>
+    <text x="700" y="138" font-family="monospace" font-size="9" fill="#475569">Redis direct</text>
+    <line x1="0" y1="156" x2="900" y2="156" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+  <g class="r3">
+    <rect x="0" y="156" width="900" height="40" fill="rgba(20,184,166,0.03)"/>
+    <rect x="16" y="164" width="8" height="8" rx="2" fill="rgba(239,68,68,0.4)"/>
+    <text x="34" y="178" font-family="monospace" font-size="10" fill="#fca5a5">Device</text>
+    <text x="220" y="171" font-family="monospace" font-size="9" fill="#64748b">device_txn_count_1h / 24h</text>
+    <text x="220" y="186" font-family="monospace" font-size="9" fill="#64748b">is_new_device</text>
+    <text x="700" y="178" font-family="monospace" font-size="9" fill="#475569">Redis direct</text>
+    <line x1="0" y1="196" x2="900" y2="196" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+  <g class="r4">
+    <rect x="0" y="196" width="900" height="40" fill="rgba(59,130,246,0.04)"/>
+    <rect x="16" y="204" width="8" height="8" rx="2" fill="rgba(245,158,11,0.5)"/>
+    <text x="34" y="218" font-family="monospace" font-size="10" fill="#fcd34d">Context</text>
+    <text x="220" y="211" font-family="monospace" font-size="9" fill="#64748b">is_new_receiver · receiver_txn_count_1h</text>
+    <text x="220" y="226" font-family="monospace" font-size="9" fill="#64748b">is_night_txn · is_festival_day</text>
+    <text x="700" y="218" font-family="monospace" font-size="9" fill="#475569">on-demand</text>
+    <line x1="0" y1="236" x2="900" y2="236" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+  <g class="r5">
+    <rect x="0" y="236" width="900" height="40" fill="rgba(20,184,166,0.03)"/>
+    <rect x="16" y="244" width="8" height="8" rx="2" fill="rgba(34,197,94,0.4)"/>
+    <text x="34" y="258" font-family="monospace" font-size="10" fill="#86efac">Temporal</text>
+    <text x="220" y="251" font-family="monospace" font-size="9" fill="#64748b">hour_of_day</text>
+    <text x="220" y="266" font-family="monospace" font-size="9" fill="#64748b">day_of_week</text>
+    <text x="700" y="258" font-family="monospace" font-size="9" fill="#475569">request body</text>
+    <line x1="0" y1="276" x2="900" y2="276" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+  <g class="r6">
+    <rect x="0" y="276" width="900" height="40" fill="rgba(59,130,246,0.04)"/>
+    <rect x="16" y="284" width="8" height="8" rx="2" fill="rgba(167,139,250,0.5)"/>
+    <text x="34" y="298" font-family="monospace" font-size="10" fill="#c4b5fd">On-demand</text>
+    <text x="220" y="291" font-family="monospace" font-size="9" fill="#64748b">is_high_value · is_round_amount</text>
+    <text x="220" y="306" font-family="monospace" font-size="9" fill="#64748b">is_just_under (49k rule)</text>
+    <text x="700" y="298" font-family="monospace" font-size="9" fill="#475569">Feast on-demand</text>
+  </g>
+</svg>

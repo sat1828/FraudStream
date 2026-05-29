@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" width="900" height="540">
+  <defs>
+    <style>
+      @keyframes sIn{0%{opacity:0}100%{opacity:1}}
+      .s0{animation:sIn .3s .05s both}
+      .s1{animation:sIn .3s .1s both}
+      .s2{animation:sIn .3s .15s both}
+      .s3{animation:sIn .3s .2s both}
+      .s4{animation:sIn .3s .25s both}
+      .s5{animation:sIn .3s .3s both}
+      .s6{animation:sIn .3s .35s both}
+      .s7{animation:sIn .3s .4s both}
+      .s8{animation:sIn .3s .45s both}
+      .s9{animation:sIn .3s .5s both}
+      .s10{animation:sIn .3s .55s both}
+      .s11{animation:sIn .3s .6s both}
+      .s12{animation:sIn .3s .65s both}
+      .s13{animation:sIn .3s .7s both}
+      .s14{animation:sIn .3s .75s both}
+    </style>
+  </defs>
+  <rect width="900" height="540" fill="#070d18"/>
+  <rect x="0" y="0" width="900" height="34" fill="rgba(255,255,255,0.025)"/>
+  <text x="20" y="22" font-family="monospace" font-size="9" fill="#475569" letter-spacing="2">SERVICE</text>
+  <text x="200" y="22" font-family="monospace" font-size="9" fill="#475569" letter-spacing="2">IMAGE</text>
+  <text x="440" y="22" font-family="monospace" font-size="9" fill="#475569" letter-spacing="2">ROLE</text>
+  <text x="720" y="22" font-family="monospace" font-size="9" fill="#475569" letter-spacing="2">MEM LIMIT</text>
+  <line x1="0" y1="34" x2="900" y2="34" stroke="rgba(100,160,255,0.15)" stroke-width=".5"/>
+<g class="s0">
+    <rect x="0" y="34" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="55" font-family="monospace" font-size="9.5" font-weight="500" fill="#93c5fd">postgres</text>
+    <text x="200" y="55" font-family="monospace" font-size="8.5" fill="#475569">postgres:16-alpine</text>
+    <text x="440" y="55" font-family="monospace" font-size="8.5" fill="#64748b">Transaction + prediction + MLflow backend</text>
+    <text x="720" y="55" font-family="monospace" font-size="9" fill="#334155">512M</text>
+    <line x1="0" y1="67" x2="900" y2="67" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s1">
+    <rect x="0" y="67" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="88" font-family="monospace" font-size="9.5" font-weight="500" fill="#93c5fd">redis</text>
+    <text x="200" y="88" font-family="monospace" font-size="8.5" fill="#475569">redis:7-alpine</text>
+    <text x="440" y="88" font-family="monospace" font-size="8.5" fill="#64748b">Online feature store · Celery broker/backend</text>
+    <text x="720" y="88" font-family="monospace" font-size="9" fill="#334155">256M</text>
+    <line x1="0" y1="100" x2="900" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s2">
+    <rect x="0" y="100" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="121" font-family="monospace" font-size="9.5" font-weight="500" fill="#fca5a5">redpanda</text>
+    <text x="200" y="121" font-family="monospace" font-size="8.5" fill="#475569">redpandadata/redpanda:v23.3.11</text>
+    <text x="440" y="121" font-family="monospace" font-size="8.5" fill="#64748b">Kafka-compatible stream broker · 3 topics</text>
+    <text x="720" y="121" font-family="monospace" font-size="9" fill="#334155">1G</text>
+    <line x1="0" y1="133" x2="900" y2="133" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s3">
+    <rect x="0" y="133" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="154" font-family="monospace" font-size="9.5" font-weight="500" fill="#fca5a5">redpanda-init</text>
+    <text x="200" y="154" font-family="monospace" font-size="8.5" fill="#475569">redpandadata/redpanda:v23.3.11</text>
+    <text x="440" y="154" font-family="monospace" font-size="8.5" fill="#64748b">One-shot topic creation (no-restart)</text>
+    <text x="720" y="154" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="166" x2="900" y2="166" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s4">
+    <rect x="0" y="166" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="187" font-family="monospace" font-size="9.5" font-weight="500" fill="#5eead4">mlflow</text>
+    <text x="200" y="187" font-family="monospace" font-size="8.5" fill="#475569">custom build</text>
+    <text x="440" y="187" font-family="monospace" font-size="8.5" fill="#64748b">Experiment tracking + artifact store</text>
+    <text x="720" y="187" font-family="monospace" font-size="9" fill="#334155">512M</text>
+    <line x1="0" y1="199" x2="900" y2="199" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s5">
+    <rect x="0" y="199" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="220" font-family="monospace" font-size="9.5" font-weight="500" fill="#5eead4">feast-apply</text>
+    <text x="200" y="220" font-family="monospace" font-size="8.5" fill="#475569">mlops build</text>
+    <text x="440" y="220" font-family="monospace" font-size="8.5" fill="#64748b">Registers Feast feature definitions (once)</text>
+    <text x="720" y="220" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="232" x2="900" y2="232" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s6">
+    <rect x="0" y="232" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="253" font-family="monospace" font-size="9.5" font-weight="500" fill="#fcd34d">data-generator</text>
+    <text x="200" y="253" font-family="monospace" font-size="8.5" fill="#475569">mlops build</text>
+    <text x="440" y="253" font-family="monospace" font-size="8.5" fill="#64748b">Generates 100K synthetic UPI transactions</text>
+    <text x="720" y="253" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="265" x2="900" y2="265" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s7">
+    <rect x="0" y="265" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="286" font-family="monospace" font-size="9.5" font-weight="500" fill="#fcd34d">model-trainer</text>
+    <text x="200" y="286" font-family="monospace" font-size="8.5" fill="#475569">mlops build</text>
+    <text x="440" y="286" font-family="monospace" font-size="8.5" fill="#64748b">XGBoost training + MLflow tracking (once)</text>
+    <text x="720" y="286" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="298" x2="900" y2="298" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s8">
+    <rect x="0" y="298" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="319" font-family="monospace" font-size="9.5" font-weight="500" fill="#fcd34d">transaction-producer</text>
+    <text x="200" y="319" font-family="monospace" font-size="8.5" fill="#475569">mlops build</text>
+    <text x="440" y="319" font-family="monospace" font-size="8.5" fill="#64748b">Streams 20 TPS + injects drift @T+60s</text>
+    <text x="720" y="319" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="331" x2="900" y2="331" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s9">
+    <rect x="0" y="331" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="352" font-family="monospace" font-size="9.5" font-weight="500" fill="#fcd34d">kafka-consumer</text>
+    <text x="200" y="352" font-family="monospace" font-size="8.5" fill="#475569">mlops build</text>
+    <text x="440" y="352" font-family="monospace" font-size="8.5" fill="#64748b">Redpanda → POST /api/v1/predict</text>
+    <text x="720" y="352" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="364" x2="900" y2="364" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s10">
+    <rect x="0" y="364" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="385" font-family="monospace" font-size="9.5" font-weight="500" fill="#c4b5fd">celery-worker</text>
+    <text x="200" y="385" font-family="monospace" font-size="8.5" fill="#475569">backend build</text>
+    <text x="440" y="385" font-family="monospace" font-size="8.5" fill="#64748b">Background retrain tasks · retrain+default queues</text>
+    <text x="720" y="385" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="397" x2="900" y2="397" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s11">
+    <rect x="0" y="397" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="418" font-family="monospace" font-size="9.5" font-weight="500" fill="#c4b5fd">backend</text>
+    <text x="200" y="418" font-family="monospace" font-size="8.5" fill="#475569">backend build</text>
+    <text x="440" y="418" font-family="monospace" font-size="8.5" fill="#64748b">FastAPI inference API · WebSocket hub</text>
+    <text x="720" y="418" font-family="monospace" font-size="9" fill="#334155">1G</text>
+    <line x1="0" y1="430" x2="900" y2="430" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s12">
+    <rect x="0" y="430" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="451" font-family="monospace" font-size="9.5" font-weight="500" fill="#fcd34d">drift-monitor</text>
+    <text x="200" y="451" font-family="monospace" font-size="8.5" fill="#475569">mlops build</text>
+    <text x="440" y="451" font-family="monospace" font-size="8.5" fill="#64748b">Evidently drift detection loop (500-txn windows)</text>
+    <text x="720" y="451" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="463" x2="900" y2="463" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s13">
+    <rect x="0" y="463" width="900" height="33" fill="rgba(59,130,246,0.02)"/>
+    <text x="20" y="484" font-family="monospace" font-size="9.5" font-weight="500" fill="#94a3b8">prometheus</text>
+    <text x="200" y="484" font-family="monospace" font-size="8.5" fill="#475569">prom/prometheus:v2.49.0</text>
+    <text x="440" y="484" font-family="monospace" font-size="8.5" fill="#64748b">Metrics scrape · 7d retention</text>
+    <text x="720" y="484" font-family="monospace" font-size="9" fill="#334155">256M</text>
+    <line x1="0" y1="496" x2="900" y2="496" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g><g class="s14">
+    <rect x="0" y="496" width="900" height="33" fill="rgba(255,255,255,0.02)"/>
+    <text x="20" y="517" font-family="monospace" font-size="9.5" font-weight="500" fill="#94a3b8">grafana</text>
+    <text x="200" y="517" font-family="monospace" font-size="8.5" fill="#475569">grafana/grafana:10.3.1</text>
+    <text x="440" y="517" font-family="monospace" font-size="8.5" fill="#64748b">Pre-provisioned dashboards</text>
+    <text x="720" y="517" font-family="monospace" font-size="9" fill="#334155">—</text>
+    <line x1="0" y1="529" x2="900" y2="529" stroke="rgba(255,255,255,0.04)" stroke-width=".5"/>
+  </g>
+</svg>

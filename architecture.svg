@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="900" height="420">
+  <defs>
+    <style>
+      @keyframes fd{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
+      @keyframes flow{0%{stroke-dashoffset:40}100%{stroke-dashoffset:0}}
+      @keyframes glow{0%,100%{opacity:.6}50%{opacity:1}}
+      @keyframes scanA{0%{transform:translateY(-100%)}100%{transform:translateY(900%)}}
+      .b1{animation:fd .5s .1s both}
+      .b2{animation:fd .5s .25s both}
+      .b3{animation:fd .5s .4s both}
+      .b4{animation:fd .5s .55s both}
+      .b5{animation:fd .5s .7s both}
+      .b6{animation:fd .5s .85s both}
+      .b7{animation:fd .5s 1s both}
+      .b8{animation:fd .5s 1.1s both}
+      .b9{animation:fd .5s 1.2s both}
+      .fl{stroke-dasharray:8 4;animation:flow 1.2s linear infinite}
+      .gl{animation:glow 2s infinite}
+      .sa{animation:scanA 4s linear infinite}
+    </style>
+    <clipPath id="cpa"><rect width="900" height="420"/></clipPath>
+  </defs>
+  <rect width="900" height="420" fill="#070d18"/>
+  <g clip-path="url(#cpa)"><rect class="sa" x="0" y="0" width="900" height="2" fill="rgba(59,130,246,0.05)"/></g>
+  <!-- section labels -->
+  <text x="18" y="22" font-family="monospace" font-size="9" fill="#1d4ed8" letter-spacing="2" opacity=".9">INGESTION</text>
+  <text x="220" y="22" font-family="monospace" font-size="9" fill="#0f766e" letter-spacing="2" opacity=".9">INFERENCE API</text>
+  <text x="490" y="22" font-family="monospace" font-size="9" fill="#854d0e" letter-spacing="2" opacity=".9">MLOPS LAYER</text>
+  <text x="720" y="22" font-family="monospace" font-size="9" fill="#6d28d9" letter-spacing="2" opacity=".9">DASHBOARD</text>
+  <!-- zone backgrounds -->
+  <rect x="10" y="28" width="195" height="330" rx="6" fill="rgba(59,130,246,0.04)" stroke="rgba(59,130,246,0.12)" stroke-width=".5"/>
+  <rect x="215" y="28" width="255" height="330" rx="6" fill="rgba(20,184,166,0.04)" stroke="rgba(20,184,166,0.12)" stroke-width=".5"/>
+  <rect x="480" y="28" width="205" height="330" rx="6" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.12)" stroke-width=".5"/>
+  <rect x="695" y="28" width="195" height="330" rx="6" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.12)" stroke-width=".5"/>
+  <!-- INGESTION NODES -->
+  <g class="b1">
+    <rect x="22" y="46" width="168" height="40" rx="5" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width=".6"/>
+    <text x="106" y="62" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#93c5fd">Data Generator</text>
+    <text x="106" y="76" text-anchor="middle" font-family="monospace" font-size="8" fill="#3b82f6">100K synthetic UPI txns</text>
+  </g>
+  <g class="b2">
+    <rect x="22" y="100" width="168" height="40" rx="5" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width=".6"/>
+    <text x="106" y="116" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#93c5fd">Txn Producer</text>
+    <text x="106" y="130" text-anchor="middle" font-family="monospace" font-size="8" fill="#3b82f6">20 TPS + drift @T+60s</text>
+  </g>
+  <g class="b3">
+    <rect x="22" y="154" width="168" height="40" rx="5" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-width=".6"/>
+    <text x="106" y="170" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#fca5a5">Redpanda</text>
+    <text x="106" y="184" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444">Kafka-compatible · 3 topics</text>
+  </g>
+  <g class="b4">
+    <rect x="22" y="208" width="168" height="40" rx="5" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.2)" stroke-width=".6"/>
+    <text x="106" y="224" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#93c5fd">Kafka Consumer</text>
+    <text x="106" y="238" text-anchor="middle" font-family="monospace" font-size="8" fill="#3b82f6">→ POST /predict</text>
+  </g>
+  <!-- INFERENCE NODES -->
+  <g class="b1">
+    <rect x="227" y="46" width="228" height="48" rx="5" fill="rgba(20,184,166,0.12)" stroke="rgba(20,184,166,0.35)" stroke-width=".8"/>
+    <text x="341" y="64" text-anchor="middle" font-family="monospace" font-size="11" font-weight="500" fill="#5eead4">FastAPI  POST /predict</text>
+    <text x="341" y="80" text-anchor="middle" font-family="monospace" font-size="8" fill="#14b8a6">2 uvicorn workers · &lt;80ms p95</text>
+  </g>
+  <g class="b2">
+    <rect x="227" y="108" width="228" height="36" rx="5" fill="rgba(20,184,166,0.08)" stroke="rgba(20,184,166,0.2)" stroke-width=".5"/>
+    <text x="341" y="131" text-anchor="middle" font-family="monospace" font-size="9" fill="#5eead4">Redis velocity counters  ≈5ms</text>
+  </g>
+  <g class="b3">
+    <rect x="227" y="154" width="228" height="36" rx="5" fill="rgba(20,184,166,0.08)" stroke="rgba(20,184,166,0.2)" stroke-width=".5"/>
+    <text x="341" y="177" text-anchor="middle" font-family="monospace" font-size="9" fill="#5eead4">XGBoost predict_proba  ≈20ms</text>
+  </g>
+  <g class="b4">
+    <rect x="227" y="200" width="228" height="36" rx="5" fill="rgba(20,184,166,0.08)" stroke="rgba(20,184,166,0.2)" stroke-width=".5"/>
+    <text x="341" y="223" text-anchor="middle" font-family="monospace" font-size="9" fill="#5eead4">SHAP TreeExplainer  ≈10ms</text>
+  </g>
+  <g class="b5">
+    <rect x="227" y="246" width="228" height="36" rx="5" fill="rgba(20,184,166,0.08)" stroke="rgba(20,184,166,0.2)" stroke-width=".5"/>
+    <text x="341" y="269" text-anchor="middle" font-family="monospace" font-size="9" fill="#5eead4">Hybrid Rule Engine  ≈1ms</text>
+  </g>
+  <!-- storage -->
+  <g class="b6">
+    <rect x="227" y="296" width="108" height="36" rx="5" fill="rgba(100,116,139,0.1)" stroke="rgba(100,116,139,0.25)" stroke-width=".5"/>
+    <text x="281" y="319" text-anchor="middle" font-family="monospace" font-size="9" fill="#94a3b8">PostgreSQL 16</text>
+  </g>
+  <g class="b6">
+    <rect x="347" y="296" width="108" height="36" rx="5" fill="rgba(100,116,139,0.1)" stroke="rgba(100,116,139,0.25)" stroke-width=".5"/>
+    <text x="401" y="319" text-anchor="middle" font-family="monospace" font-size="9" fill="#94a3b8">Redis 7</text>
+  </g>
+  <!-- MLOPS NODES -->
+  <g class="b3">
+    <rect x="492" y="46" width="178" height="40" rx="5" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.3)" stroke-width=".6"/>
+    <text x="581" y="62" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#fcd34d">Evidently AI</text>
+    <text x="581" y="76" text-anchor="middle" font-family="monospace" font-size="8" fill="#f59e0b">drift check / 500 txns</text>
+  </g>
+  <g class="b4">
+    <rect x="492" y="100" width="178" height="40" rx="5" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.3)" stroke-width=".6"/>
+    <text x="581" y="116" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#fcd34d">Celery Worker</text>
+    <text x="581" y="130" text-anchor="middle" font-family="monospace" font-size="8" fill="#f59e0b">retrain queue on drift &gt;10%</text>
+  </g>
+  <g class="b5">
+    <rect x="492" y="154" width="178" height="40" rx="5" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.3)" stroke-width=".6"/>
+    <text x="581" y="170" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#fcd34d">MLflow 2.17</text>
+    <text x="581" y="184" text-anchor="middle" font-family="monospace" font-size="8" fill="#f59e0b">experiments + registry</text>
+  </g>
+  <g class="b6">
+    <rect x="492" y="208" width="84" height="36" rx="5" fill="rgba(100,116,139,0.1)" stroke="rgba(100,116,139,0.25)" stroke-width=".5"/>
+    <text x="534" y="231" text-anchor="middle" font-family="monospace" font-size="9" fill="#94a3b8">Prometheus</text>
+  </g>
+  <g class="b6">
+    <rect x="586" y="208" width="84" height="36" rx="5" fill="rgba(100,116,139,0.1)" stroke="rgba(100,116,139,0.25)" stroke-width=".5"/>
+    <text x="628" y="231" text-anchor="middle" font-family="monospace" font-size="9" fill="#94a3b8">Grafana</text>
+  </g>
+  <g class="b7">
+    <rect x="492" y="258" width="178" height="36" rx="5" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.2)" stroke-width=".5"/>
+    <text x="581" y="281" text-anchor="middle" font-family="monospace" font-size="9" fill="#c4b5fd">Feast Feature Store</text>
+  </g>
+  <!-- DASHBOARD NODES -->
+  <g class="b5">
+    <rect x="707" y="46" width="174" height="36" rx="5" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)" stroke-width=".6"/>
+    <text x="794" y="63" text-anchor="middle" font-family="monospace" font-size="10" font-weight="500" fill="#c4b5fd">/dashboard</text>
+    <text x="794" y="76" text-anchor="middle" font-family="monospace" font-size="8" fill="#8b5cf6">KPIs · SHAP · live feed</text>
+  </g>
+  <g class="b6">
+    <rect x="707" y="96" width="174" height="36" rx="5" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.2)" stroke-width=".5"/>
+    <text x="794" y="119" text-anchor="middle" font-family="monospace" font-size="9" fill="#c4b5fd">/transactions</text>
+  </g>
+  <g class="b7">
+    <rect x="707" y="146" width="174" height="36" rx="5" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.2)" stroke-width=".5"/>
+    <text x="794" y="169" text-anchor="middle" font-family="monospace" font-size="9" fill="#c4b5fd">/network  3D force graph</text>
+  </g>
+  <g class="b8">
+    <rect x="707" y="196" width="174" height="36" rx="5" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.2)" stroke-width=".5"/>
+    <text x="794" y="219" text-anchor="middle" font-family="monospace" font-size="9" fill="#c4b5fd">/models  promote · rollback</text>
+  </g>
+  <g class="b9">
+    <rect x="707" y="246" width="174" height="36" rx="5" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.2)" stroke-width=".5"/>
+    <text x="794" y="269" text-anchor="middle" font-family="monospace" font-size="9" fill="#c4b5fd">/monitoring  Evidently</text>
+  </g>
+  <!-- ARROWS -->
+  <!-- gen -> producer -->
+  <line x1="106" y1="86" x2="106" y2="100" stroke="#3b82f6" stroke-width="1" class="fl"/>
+  <!-- producer -> redpanda -->
+  <line x1="106" y1="140" x2="106" y2="154" stroke="#3b82f6" stroke-width="1" class="fl"/>
+  <!-- redpanda -> consumer -->
+  <line x1="106" y1="194" x2="106" y2="208" stroke="#ef4444" stroke-width="1" class="fl"/>
+  <!-- consumer -> fastapi -->
+  <path d="M190 228 Q207 228 207 70 L227 70" stroke="#3b82f6" stroke-width="1" fill="none" class="fl"/>
+  <!-- inference chain -->
+  <line x1="341" y1="94" x2="341" y2="108" stroke="#14b8a6" stroke-width="1" class="fl"/>
+  <line x1="341" y1="144" x2="341" y2="154" stroke="#14b8a6" stroke-width="1" class="fl"/>
+  <line x1="341" y1="190" x2="341" y2="200" stroke="#14b8a6" stroke-width="1" class="fl"/>
+  <line x1="341" y1="236" x2="341" y2="246" stroke="#14b8a6" stroke-width="1" class="fl"/>
+  <line x1="281" y1="282" x2="281" y2="296" stroke="#64748b" stroke-width=".7" class="fl"/>
+  <line x1="401" y1="282" x2="401" y2="296" stroke="#64748b" stroke-width=".7" class="fl"/>
+  <!-- fastapi -> evidently (reads postgres) -->
+  <path d="M455 314 Q470 314 470 66 L492 66" stroke="#64748b" stroke-width=".7" fill="none" class="fl" stroke-dasharray="5 3"/>
+  <!-- evidently -> celery -->
+  <line x1="581" y1="86" x2="581" y2="100" stroke="#f59e0b" stroke-width="1" class="fl"/>
+  <!-- celery -> mlflow -->
+  <line x1="581" y1="140" x2="581" y2="154" stroke="#f59e0b" stroke-width="1" class="fl"/>
+  <!-- retrain loop -->
+  <path d="M492 120 Q460 120 460 80 Q460 46 492 46" stroke="#f59e0b" stroke-width=".8" fill="none" stroke-dasharray="5 3" class="fl"/>
+  <!-- fastapi -> dashboard (ws) -->
+  <path d="M455 70 Q680 70 707 114" stroke="#8b5cf6" stroke-width=".8" fill="none" stroke-dasharray="5 3" class="fl"/>
+  <!-- bottom label -->
+  <text x="450" y="408" text-anchor="middle" font-family="monospace" font-size="9" fill="#334155" letter-spacing="2">15 DOCKER SERVICES · SINGLE docker compose up --build</text>
+</svg>
